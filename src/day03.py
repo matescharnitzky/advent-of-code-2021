@@ -145,9 +145,7 @@ assert calc_co2_rate(examples) == "01010"
 assert calc_life_support(examples) == 230
 
 if __name__ == "__main__":
-    with open("./data/day03.txt") as f:
-        raw = f.read()
-    reports = [x for x in raw.splitlines()]
+    reports = open("./data/day03.txt").read().splitlines()
     print("Task #1 solution: {}".format(calc_consumption(reports)))
     print("Task #2 solution: {}".format(calc_life_support(reports)))
 
