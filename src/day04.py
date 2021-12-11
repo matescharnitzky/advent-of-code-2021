@@ -26,7 +26,7 @@ raw = """7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
 
 
 # parse data
-def parse_data(s: str) -> Tuple[List, List, List]:
+def parse_data(s: str) -> Tuple[List, List]:
 
     # lines
     lines = [line for line in s.splitlines() if line != ""]
@@ -42,18 +42,17 @@ def parse_data(s: str) -> Tuple[List, List, List]:
     for i in range(n_boards):
         boards.append(np.array(data[(i*5):((i+1)*5)]))
 
+    return numbers, boards
+
+
+numbers, boards = parse_data(raw)
+
+
+# task 1
+def calc_winner_score(numbers: List[int], boards: List[np.ndarray]) -> int:
+
     # indicators
-    indicators = [np.zeros((5, 5), np.int8) for i in range(n_boards)]
-
-    return numbers, boards, indicators
-
-
-numbers, boards, indicators = parse_data(raw)
-
-
-def calc_winning_score(numbers: List[int],
-                       boards: List[np.ndarray],
-                       indicators: List[np.ndarray]) -> int:
+    indicators = [np.zeros((5, 5), np.int8) for board in boards]
 
     for number in numbers:
         for i, board in enumerate(boards):
@@ -68,9 +67,40 @@ def calc_winning_score(numbers: List[int],
                 return number * np.sum(board[indicators[i] != 1])
 
 
-assert calc_winning_score(numbers, boards, indicators) == 4512
+assert calc_winner_score(numbers, boards) == 4512
+
+
+# task 2
+def calc_last_winner_score(numbers: List[int], boards: List[np.ndarray]) -> int:
+
+    # indicators
+    indicators = [np.zeros((5, 5), np.int8) for board in boards]
+
+    winners = []
+    scores = {}
+
+    for number in numbers:
+        for i, board in enumerate(boards):
+            indicators[i][board == number] = 1
+
+            col_bingo = np.sum(indicators[i], 0) == 5
+            row_bingo = np.sum(indicators[i], 1) == 5
+
+            if (np.sum(col_bingo) > 0) and (i not in winners):
+                winners.append(i)
+                scores[i] = number * np.sum(board[indicators[i] != 1])
+            if (np.sum(row_bingo) > 0) and (i not in winners):
+                winners.append(i)
+                scores[i] = number * np.sum(board[indicators[i] != 1])
+
+    return list(scores.values())[-1]
+
+
+assert calc_last_winner_score(numbers, boards) == 1924
+
 
 if __name__ == "__main__":
     raw = open("./data/day04.txt").read()
-    numbers, boards, indicators = parse_data(raw)
-    print("Task #1 solution: {}".format(calc_winning_score(numbers, boards, indicators)))
+    numbers, boards = parse_data(raw)
+    print("Task #1 solution: {}".format(calc_winner_score(numbers, boards)))
+    print("Task #2 solution: {}".format(calc_last_winner_score(numbers, boards)))
