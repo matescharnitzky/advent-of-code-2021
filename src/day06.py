@@ -2,27 +2,52 @@
 from typing import List
 
 RAW = "3,4,3,1,2"
-AGES = [int(x) for x in RAW.split(",")]
+TIMERS = [int(x) for x in RAW.split(",")]
 
 
-def simulate(ages: List[int], days: int):
+class LanternFish:
 
-    for i in range(1, days+1):
-        eights = [8 for age in ages if age == 0]
-        ages = [6 if age == 0 else age - 1 for age in ages] + eights
+    def __init__(self, timers: List[int]) -> None:
+        self.timers = [0 for _ in range(9)]
 
-    m = len(ages)
+        for timer in timers:
+            self.timers[timer] += 1
 
-    return m
+    def step(self) -> None:
+        new_timers = self.timers[1:] + [0]
+        new_timers[8] += self.timers[0]
+        new_timers[6] += self.timers[0]
+        self.timers = new_timers
+
+    def count(self) -> int:
+        return sum(self.timers)
 
 
-assert simulate(AGES, 18) == 26
-assert simulate(AGES, 80) == 5934
-assert simulate(AGES, 256) == 26984457539
+lf = LanternFish(TIMERS)
+for _ in range(18):
+    lf.step()
+assert lf.count() == 26
+
+lf = LanternFish(TIMERS)
+for _ in range(80):
+    lf.step()
+assert lf.count() == 5934
+
+lf = LanternFish(TIMERS)
+for _ in range(256):
+    lf.step()
+assert lf.count() == 26984457539
 
 
 if __name__ == "__main__":
     RAW = open("./data/day06.txt").read()
-    AGES = [int(x) for x in RAW.split(",")]
-    print("Task #1 solution: {}".format(simulate(AGES, 80)))
+    TIMERS = [int(x) for x in RAW.split(",")]
+    lf = LanternFish(TIMERS)
+    for _ in range(80):
+        lf.step()
+    print("Task #1 solution: {}".format(lf.count()))
+    lf = LanternFish(TIMERS)
+    for _ in range(256):
+        lf.step()
+    print("Task #2 solution: {}".format(lf.count()))
 
