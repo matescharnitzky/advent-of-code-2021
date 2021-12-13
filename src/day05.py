@@ -24,14 +24,14 @@ class Coordinate:
     y2: int
 
     @staticmethod
-    def parse_line(s):
+    def parse_coordinates(s):
         p1, p2 = s.split(" -> ")
         x1, y1 = p1.split(",")
         x2, y2 = p2.split(",")
         return Coordinate(int(x1), int(y1), int(x2), int(y2))
 
 
-COORDINATES = [Coordinate.parse_line(s) for s in RAW.splitlines()]
+COORDINATES = [Coordinate.parse_coordinates(s) for s in RAW.splitlines()]
 
 
 @dataclass
@@ -123,7 +123,7 @@ assert DIAGRAM.count_nb_dangerous() == 12
 
 if __name__ == "__main__":
     RAW = open("./data/day05.txt").read()
-    COORDINATES = [Coordinate.parse_line(s) for s in RAW.splitlines()]
+    COORDINATES = [Coordinate.parse_coordinates(s) for s in RAW.splitlines()]
     HV_LINES = [Point.find_hv_lines(coordinate) for coordinate in COORDINATES]
     HVD_LINES = [Point.find_hvd_lines(coordinate) for coordinate in COORDINATES]
     DIAGRAM = Diagram.init_table(COORDINATES, HV_LINES)
